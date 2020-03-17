@@ -42,6 +42,7 @@ class Residual(nn.Module):
             nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1, stride=1, bias=False),
             _norm_func(out_channels)
         )
+        # 当输入和输出不一样的时候加一个skip网络变一下shape即可.
         if stride != 1 or in_channels != out_channels:
             self.skip = nn.Sequential(
                 nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1, stride=stride, bias=False),

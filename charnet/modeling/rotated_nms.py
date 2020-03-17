@@ -6,8 +6,8 @@
 # This source code is licensed under the LICENSE file in the root directory of this source tree.
 
 import numpy as np
-import pyclipper
-from shapely.geometry import Polygon
+import pyclipper  # pip install pyclipper
+from shapely.geometry import Polygon  # pip install Shapely
 
 
 def nms(boxes, overlapThresh, neighbourThresh=0.5, minScore=0, num_neig=0):
@@ -162,7 +162,7 @@ def softnms(boxes, box_scores, char_scores=None, overlapThresh=0.3,
     else:
         return keep, new_boxes
 
-
+# 对于检测出来的不是box情况时候用.
 def nms_poly(polys, scores, overlapThresh, neighbourThresh=0.5, minScore=0, num_neig=0):
     pick = list()
     suppressed = [False for _ in range(len(polys))]

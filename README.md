@@ -1,3 +1,27 @@
+
+
+
+
+
+datasets/ICDAR2015/test/GenericVocabulary.txt 
+是英文单词表.
+
+
+datasets/ICDAR2015/test/char_dict.txt
+是字母表.
+
+这2个分别是做识别和检测任务时候需要的词库.
+
+
+
+
+
+
+
+
+
+
+
 # Convolutional Character Networks
 
 This project hosts the testing code for CharNet, described in our paper:

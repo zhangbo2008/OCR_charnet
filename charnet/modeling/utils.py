@@ -7,7 +7,7 @@
 
 import math
 
-
+#返回一个跟point   sshape一样的数组  points = [[x1, y1], [x2, y1], [x2, y2], [x1, y2]]
 def rotate_rect(x1, y1, x2, y2, degree, center_x, center_y):
     points = [[x1, y1], [x2, y1], [x2, y2], [x1, y2]]
     new_points = list()

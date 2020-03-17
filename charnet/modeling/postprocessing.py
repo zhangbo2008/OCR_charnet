@@ -14,7 +14,12 @@ from .rotated_nms import nms, nms_with_char_cls, \
     softnms, nms_poly
 from shapely.geometry import Polygon
 import pyclipper
+import sys,os
 
+sys.path.append(os.path.abspath("."))
+sys.path.append(os.path.abspath(".."))
+sys.path.append(os.path.abspath("..\.."))
+print(sys.path)
 
 def load_lexicon(path):
     lexicon = list()
@@ -26,7 +31,7 @@ def load_lexicon(path):
                 lexicon.append(line.strip())
     return lexicon
 
-
+# 用chr(31) 做的分隔符.
 def load_char_dict(path, seperator=chr(31)):
     char_dict = dict()
     with open(path, 'rt') as fr:
@@ -35,7 +40,7 @@ def load_char_dict(path, seperator=chr(31)):
             char_dict[int(sp[1])] = sp[0].upper()
     return char_dict
 
-
+# 这个就是表示一句话.
 class WordInstance:
     def __init__(self, word_bbox, word_bbox_score, text, text_score, char_scores):
         self.word_bbox = word_bbox
@@ -63,7 +68,7 @@ class OrientedTextPostProcessing(nn.Module):
         self.char_nms_iou_thresh = char_nms_iou_thresh
         self.char_dict = load_char_dict(char_dict_file)
         self.lexicon = load_lexicon(word_lexicon_path)
-
+# 这个后处理,还是神经网络!!!!!!!!!!1
     def forward(
             self, pred_word_fg, pred_word_tblr,
             pred_word_orient, pred_char_fg,
@@ -88,6 +93,8 @@ class OrientedTextPostProcessing(nn.Module):
 
         return char_bboxes, char_scores, word_instances
 
+
+    # 首先解析boxxes
     def parse_word_bboxes(
             self, pred_word_fg, pred_word_tblr,
             pred_word_orient, scale_w, scale_h,
@@ -107,6 +114,8 @@ class OrientedTextPostProcessing(nn.Module):
                 o, scale_w * word_stride * x, scale_h * word_stride * y)
             oriented_word_bboxes[idx, :8] = np.array(four_points, dtype=np.float32).flat
             oriented_word_bboxes[idx, 8] = score
+
+
         keep, oriented_word_bboxes = nms(oriented_word_bboxes, self.word_nms_iou_thresh, num_neig=1)
         oriented_word_bboxes = oriented_word_bboxes[keep]
         oriented_word_bboxes[:, :8] = oriented_word_bboxes[:, :8].round()
@@ -124,6 +133,7 @@ class OrientedTextPostProcessing(nn.Module):
             char_keep_rows, char_keep_cols = np.where(
                 (pred_word_fg > self.word_min_score) & (pred_char_fg > self.char_min_score))
         else:
+            # 只保留那些是word的char
             th, tw = pred_char_fg.shape
             word_fg_mask = cv2.resize((pred_word_fg > self.word_min_score).astype(np.uint8),
                                       (tw, th), interpolation=cv2.INTER_NEAREST).astype(np.bool)
@@ -216,6 +226,7 @@ class OrientedTextPostProcessing(nn.Module):
         return word_instances
 
     def parse_words(self, word_bboxes, char_bboxes, char_scores, char_dict):
+        # 计算word poly和char poly的iou值.
         def match(word_bbox, word_poly, char_bbox, char_poly):
             word_xs = word_bbox[0:8:2]
             word_ys = word_bbox[1:8:2]
@@ -241,6 +252,7 @@ class OrientedTextPostProcessing(nn.Module):
             char_vecs = (char_bboxes.reshape((-1, 4, 2)) - word_bbox[0:2]).mean(axis=1)
             proj = char_vecs.dot(word_vec)
             order = np.argsort(proj)
+            #对char_scores重新排序.
             text, score = decode(char_scores[order])
             return text, score, char_scores[order]
 
@@ -256,6 +268,9 @@ class OrientedTextPostProcessing(nn.Module):
         num_char = char_bboxes.shape[0]
         word_instances = list()
         word_chars = [list() for _ in range(num_word)]
+        #每一个word是一个char组成的数组.
+
+        # 吧每一个char放入word中
         for idx in range(num_char):
             char_bbox = char_bboxes[idx]
             char_poly = char_polys[idx]
@@ -267,6 +282,14 @@ class OrientedTextPostProcessing(nn.Module):
             jdx = np.argmax(match_scores)
             if match_scores[jdx] > 0:
                 word_chars[jdx].append(idx)
+
+
+
+
+
+
+
+
         for idx in range(num_word):
             char_indices = word_chars[idx]
             if len(char_indices) > 0:

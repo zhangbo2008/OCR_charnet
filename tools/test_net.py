@@ -50,15 +50,27 @@ def vis(img, word_instances):
 
 
 if __name__ == '__main__':
+    import sys
+    sys.path.append(os.path.abspath("."))
+    sys.path.append(os.path.abspath(".."))
+    print(sys.path)
+
+
+
+
+
     parser = argparse.ArgumentParser(description="Test")
+    #
+    # parser.add_argument("config_file", help="path to config file", type=str)
+    #  注意加默认参数时候前面必须加--
 
-    parser.add_argument("config_file", help="path to config file", type=str)
-    parser.add_argument("image_dir", type=str)
-    parser.add_argument("results_dir", type=str)
-
+    # https://blog.csdn.net/qxqxqzzz/article/details/100558953
+    parser.add_argument("--image_dir", type=str ,default='1' )
+    parser.add_argument("--results_dir", type=str,default="output")
+    #
     args = parser.parse_args()
-
-    cfg.merge_from_file(args.config_file)
+    #
+    # cfg.merge_from_file(args.config_file)
     cfg.freeze()
 
     print(cfg)
@@ -66,7 +78,7 @@ if __name__ == '__main__':
     charnet = CharNet()
     charnet.load_state_dict(torch.load(cfg.WEIGHT))
     charnet.eval()
-    charnet.cuda()
+    # charnet.cuda()
 
     for im_name in sorted(os.listdir(args.image_dir)):
         print("Processing {}...".format(im_name))
