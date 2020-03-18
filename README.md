@@ -1,5 +1,5 @@
 
-
+https://www.cnblogs.com/zhengbiqing/p/11254717.html
 
 
 
@@ -11,6 +11,27 @@ datasets/ICDAR2015/test/char_dict.txt
 是字母表.
 
 这2个分别是做识别和检测任务时候需要的词库.
+
+
+
+
+
+环境重新装:
+
+
+pip install torch==1.4.0+cpu torchvision==0.5.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
