@@ -1,4 +1,8 @@
 
+运行tools/main.py
+检测的图片放入tools/1里面
+
+
 https://www.cnblogs.com/zhengbiqing/p/11254717.html
 
 
